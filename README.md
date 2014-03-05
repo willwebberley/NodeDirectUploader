@@ -19,12 +19,33 @@ This example uses the [express](http://expressjs.com/) web framework to facilita
 This code is mostly ready to be run as cloned, but a function `update_account()` will need to be defined to handle the storing of the POSTed information. The current example simply demonstrates the upload to S3.
 
 
-**Running the application**
+## Dependencies and Installation
+
+Ensure Node is installed. This can be done through your package manager or from their [website](http://nodejs.org/).
+
+Clone this repository:
+```term
+$ git clone git@github.com:flyingsparx/NodeDirectUploader.git
+```
+
+Change directory into the application and use `npm` to install the application's dependencies:
+```term
+$ cd NodeDirectUploader
+$ npm install
+```
+
+
+## Running the application
+
 * Set environment variables for your AWS access key and secret (see Heroku's  [Config Vars article](https://devcenter.heroku.com/articles/config-vars))
 * Download and install the [Heroku toolbelt](https://toolbelt.heroku.com/)
 * Run with ```$ foreman start```
 
-**Deploying the application (see the article [Deploying with Git](https://devcenter.heroku.com/articles/git) for more detailed information)**
+
+## Deploying the application 
+
+See the article [Deploying with Git](https://devcenter.heroku.com/articles/git) for more detailed information on deploying to Heroku.
+
 * Download and install the [Heroku toolbelt](https://toolbelt.heroku.com/)
 * Commit your application to a local Git repository (e.g. `git init`, `git add .`, `git commit -m "version 1 commit"`, etc.)
 * Create the application on Heroku by adding a Git remote (`$ heroku create`)
