@@ -57,6 +57,7 @@ app.get('/sign_s3', function(req, res){
 
     var signature = crypto.createHmac('sha1', AWS_SECRET_KEY).update(put_request).digest('base64');
     signature = encodeURIComponent(signature.trim());
+    signature = signature.replace('%2B','+');
 
     var url = 'https://'+S3_BUCKET+'.s3.amazonaws.com/'+object_name;
 
