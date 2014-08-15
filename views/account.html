@@ -32,7 +32,7 @@ function s3_upload(){
     var url_elem = document.getElementById("avatar_url");
     var preview_elem = document.getElementById("preview");
     var s3upload = new S3Upload({
-        file_dom_selector: '#files',
+        file_dom_selector: 'files',
         s3_sign_put_url: '/sign_s3',
         onProgress: function(percent, message) {
             status_elem.innerHTML = 'Upload progress: ' + percent + '% ' + message;
