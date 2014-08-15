@@ -28,19 +28,22 @@
 
 <script type="text/javascript">
 function s3_upload(){
+    var status_elem = document.getElementById("status");
+    var url_elem = document.getElementById("avatar_url");
+    var preview_elem = document.getElementById("preview");
     var s3upload = new S3Upload({
         file_dom_selector: '#files',
         s3_sign_put_url: '/sign_s3',
         onProgress: function(percent, message) {
-            $('#status').html('Upload progress: ' + percent + '% ' + message);
+            status_elem.innerHTML = 'Upload progress: ' + percent + '% ' + message;
         },
         onFinishS3Put: function(public_url) {
-            $('#status').html('Upload completed. Uploaded to: '+ public_url);
-            $("#avatar_url").val(public_url);
-            $("#preview").html('<img src="'+public_url+'" style="width:300px;" />');
+            status_elem.innerHTML = 'Upload completed. Uploaded to: '+ public_url;
+            url_elem.value = public_url;
+            preview_elem.innerHTML = '<img src="'+public_url+'" style="width:300px;" />';
         },
         onError: function(status) {
-            $('#status').html('Upload error: ' + status);
+            status_elem.innerHTML = 'Upload error: ' + status;
         }
     });
 }
