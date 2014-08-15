@@ -45,9 +45,10 @@ function s3_upload(){
     });
 }
 
-$(document).ready(function() {
-    $('#files').on("change", s3_upload);
-});
+(function() {
+    var input_element = document.getElementById("files");
+    input_element.onchange = s3_upload;
+})();
 </script>
 </body>
 </html>
