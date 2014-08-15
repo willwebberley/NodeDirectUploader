@@ -1,45 +1,31 @@
-/*
-
-Copyright 2013 tadruj
-
-Project home: https://github.com/tadruj/s3upload-coffee-javascript
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
-*/
-
 (function() {
 
   window.S3Upload = (function() {
 
+    S3Upload.prototype.s3_object_name = 'default_name';
+
     S3Upload.prototype.s3_sign_put_url = '/signS3put';
 
-    S3Upload.prototype.file_dom_selector = '#file_upload';
+    S3Upload.prototype.file_dom_selector = 'file_upload';
 
-    S3Upload.prototype.onFinishS3Put = function(public_url, file) {
-      return console.log('base.onFinishS3Put()', public_url, file);
+    S3Upload.prototype.onFinishS3Put = function(public_url) {
+      return console.log('base.onFinishS3Put()', public_url);
     };
 
-    S3Upload.prototype.onProgress = function(percent, status, public_url, file) {
-      return console.log('base.onProgress()', percent, status, public_url, file);
+    S3Upload.prototype.onProgress = function(percent, status) {
+      return console.log('base.onProgress()', percent, status);
     };
 
-    S3Upload.prototype.onError = function(status, file) {
-      return console.log('base.onError()', status, file);
+    S3Upload.prototype.onError = function(status) {
+      return console.log('base.onError()', status);
     };
 
     function S3Upload(options) {
-      if (options == null) {
-        options = {};
+      if (options == null) options = {};
+      for (option in options) {
+        this[option] = options[option];
       }
-      _.extend(this, options);
-      if (this.file_dom_selector) {
-        this.handleFileSelect($(this.file_dom_selector).get(0));
-      }
+      this.handleFileSelect(document.getElementById(this.file_dom_selector));
     }
 
     S3Upload.prototype.handleFileSelect = function(file_element) {
@@ -69,13 +55,12 @@ Unless required by applicable law or agreed to in writing, software distributed 
       return xhr;
     };
 
-    S3Upload.prototype.executeOnSignedUrl = function(file, callback, opts) {
-      var name, this_s3upload, type, xhr;
+    S3Upload.prototype.executeOnSignedUrl = function(file, callback) {
+      var this_s3upload, xhr;
       this_s3upload = this;
       xhr = new XMLHttpRequest();
-      type = opts && opts.type || file.type;
-      name = opts && opts.name || file.name;
-      xhr.open('GET', this.s3_sign_put_url + '?s3_object_type=' + type + '&s3_object_name=' + encodeURIComponent(name), true);
+      xhr.open('GET', this.s3_sign_put_url + '?s3_object_type=' + file.type + '&s3_object_name=' + this.s3_object_name, true);
+      xhr.overrideMimeType('text/plain; charset=x-user-defined');
       xhr.onreadystatechange = function(e) {
         var result;
         if (this.readyState === 4 && this.status === 200) {
@@ -85,7 +70,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
             this_s3upload.onError('Signing server returned some ugly/empty JSON: "' + this.responseText + '"');
             return false;
           }
-          return callback(result.signed_request, result.url);
+          return callback(decodeURIComponent(result.signed_request), result.url);
         } else if (this.readyState === 4 && this.status !== 200) {
           return this_s3upload.onError('Could not contact request signing server. Status = ' + this.status);
         }
@@ -93,53 +78,43 @@ Unless required by applicable law or agreed to in writing, software distributed 
       return xhr.send();
     };
 
-    S3Upload.prototype.uploadToS3 = function(file, url, public_url, opts) {
-      var this_s3upload, type, xhr;
+    S3Upload.prototype.uploadToS3 = function(file, url, public_url) {
+      var this_s3upload, xhr;
       this_s3upload = this;
-      type = opts && opts.type || file.type;
       xhr = this.createCORSRequest('PUT', url);
       if (!xhr) {
         this.onError('CORS not supported');
       } else {
         xhr.onload = function() {
           if (xhr.status === 200) {
-            this_s3upload.onProgress(100, 'Upload completed.', public_url, file);
-            return this_s3upload.onFinishS3Put(public_url, file);
+            this_s3upload.onProgress(100, 'Upload completed.');
+            return this_s3upload.onFinishS3Put(public_url);
           } else {
-            return this_s3upload.onError('Upload error: ' + xhr.status, file);
+            return this_s3upload.onError('Upload error: ' + xhr.status);
           }
         };
         xhr.onerror = function() {
-          return this_s3upload.onError('XHR error.', file);
+          return this_s3upload.onError('XHR error.');
         };
         xhr.upload.onprogress = function(e) {
           var percentLoaded;
           if (e.lengthComputable) {
             percentLoaded = Math.round((e.loaded / e.total) * 100);
-            return this_s3upload.onProgress(percentLoaded, (percentLoaded === 100 ? 'Finalizing.' : 'Uploading.'), public_url, file);
+            return this_s3upload.onProgress(percentLoaded, percentLoaded === 100 ? 'Finalizing.' : 'Uploading.');
           }
         };
       }
-      xhr.setRequestHeader('Content-Type', type);
+      xhr.setRequestHeader('Content-Type', file.type);
       xhr.setRequestHeader('x-amz-acl', 'public-read');
       return xhr.send(file);
     };
 
-    S3Upload.prototype.validate = function(file) {
-      return null;
-    };
-
-    S3Upload.prototype.uploadFile = function(file, opts) {
-      var error, this_s3upload;
-      error = this.validate(file);
-      if (error) {
-        this.onError(error, file);
-        return null;
-      }
+    S3Upload.prototype.uploadFile = function(file) {
+      var this_s3upload;
       this_s3upload = this;
       return this.executeOnSignedUrl(file, function(signedURL, publicURL) {
-        return this_s3upload.uploadToS3(file, signedURL, publicURL, opts);
-      }, opts);
+        return this_s3upload.uploadToS3(file, signedURL, publicURL);
+      });
     };
 
     return S3Upload;
