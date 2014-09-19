@@ -12,9 +12,9 @@
  * Packages should be installed with "npm install".
  */
 var express = require('express');
-var crypto = require('crypto');
 var http = require('http');
 var path = require('path');
+var aws = require('aws-sdk');
 
 /*
  * Set-up the Express app.
@@ -46,27 +46,28 @@ app.get('/account', function(req, res){
  * anticipated URL of the image.
  */
 app.get('/sign_s3', function(req, res){
-    var object_name = req.query.s3_object_name;
-    var mime_type = req.query.s3_object_type;
-
-    var now = new Date();
-    var expires = Math.ceil((now.getTime() + 10000)/1000); // 10 seconds from now
-    var amz_headers = "x-amz-acl:public-read";  
-
-    var put_request = "PUT\n\n"+mime_type+"\n"+expires+"\n"+amz_headers+"\n/"+S3_BUCKET+"/"+object_name;
-
-    var signature = crypto.createHmac('sha1', AWS_SECRET_KEY).update(put_request).digest('base64');
-    signature = encodeURIComponent(signature.trim());
-    signature = signature.replace('%2B','+');
-
-    var url = 'https://'+S3_BUCKET+'.s3.amazonaws.com/'+object_name;
-
-    var credentials = {
-        signed_request: url+"?AWSAccessKeyId="+AWS_ACCESS_KEY+"&Expires="+expires+"&Signature="+signature,
-        url: url
-    };
-    res.write(JSON.stringify(credentials));
-    res.end();
+    aws.config.update({accessKeyId: AWS_ACCESS_KEY , secretAccessKey: AWS_SECRET_KEY });
+    var s3 = new aws.S3(); 
+    var s3_params = { 
+        Bucket: S3_BUCKET, 
+        Key: req.query.s3_object_name, 
+        Expires: 60, 
+        ContentType: req.query.s3_object_type, 
+        ACL: 'public-read'
+    }; 
+    s3.getSignedUrl('putObject', s3_params, function(err, data){ 
+        if(err){ 
+            console.log(err); 
+        }
+        else{ 
+            var return_data = {
+                signed_request: data,
+                url: 'https://'+S3_BUCKET+'.s3.amazonaws.com/'+req.query.s3_object_name 
+            };
+            res.write(JSON.stringify(return_data));
+            res.end();
+        } 
+    });
 });
 
 /*
