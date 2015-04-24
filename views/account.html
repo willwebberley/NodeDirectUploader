@@ -28,7 +28,7 @@
 <script type="text/javascript">
 
 /*
-    Function to carry out the actual PUT request to S3 using the signed request from the Python app.
+    Function to carry out the actual PUT request to S3 using the signed request from the app.
 */
 function upload_file(file, signed_request, url){
     var xhr = new XMLHttpRequest();
@@ -47,7 +47,7 @@ function upload_file(file, signed_request, url){
 }
 
 /*
-    Function to get the temporary signed request from the Python app.
+    Function to get the temporary signed request from the app.
     If request successful, continue to upload the file using this signed
     request.
 */
