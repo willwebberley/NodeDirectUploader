@@ -4,9 +4,8 @@ NodeDirectUploader
 Licensing
 ----------
 
-*General*: The files in this repository are, unless stated otherwise, released under the Apache License. You are free to redistribute this code with or without modification. The full license text is available [here](http://www.apache.org/licenses/LICENSE-2.0). 
+The files in this repository are, unless stated otherwise, released under the Apache License. You are free to redistribute this code with or without modification. The full license text is available [here](http://www.apache.org/licenses/LICENSE-2.0). 
 
-*Other*: The script `s3upload.js` is copyright 2013 tadruj. Please find more information on this script at its home [repository](https://github.com/tadruj/s3upload-coffee-javascript). It is released under the Apache License, and the full license text is available [here](http://www.apache.org/licenses/LICENSE-2.0).
 
 
 Direct-to-S3 uploads in a Node.js application running on Heroku
