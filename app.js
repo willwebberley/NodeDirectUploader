@@ -47,6 +47,7 @@ app.get('/account', function(req, res){
  */
 app.get('/sign_s3', function(req, res){
     aws.config.update({accessKeyId: AWS_ACCESS_KEY , secretAccessKey: AWS_SECRET_KEY });
+    aws.config.update({region: 'your-region' , signatureVersion: 'v4' });
     var s3 = new aws.S3(); 
     var s3_params = { 
         Bucket: S3_BUCKET, 
