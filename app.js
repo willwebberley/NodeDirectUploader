@@ -30,7 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
  */
 var AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
 var AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
-var S3_BUCKET = process.env.S3_BUCKET
+var S3_BUCKET = process.env.S3_BUCKET;
 
 /*
  * Respond to GET requests to /account.
@@ -47,7 +47,6 @@ app.get('/account', function(req, res){
  */
 app.get('/sign_s3', function(req, res){
     aws.config.update({accessKeyId: AWS_ACCESS_KEY , secretAccessKey: AWS_SECRET_KEY });
-    aws.config.update({region: 'your-region' , signatureVersion: 'v4' });
     var s3 = new aws.S3(); 
     var s3_params = { 
         Bucket: S3_BUCKET, 
