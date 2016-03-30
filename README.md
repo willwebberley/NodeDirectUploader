@@ -24,7 +24,7 @@ Ensure Node is installed. This can be done through your package manager or from 
 
 Clone this repository:
 ```term
-$ git clone git@github.com:flyingsparx/NodeDirectUploader.git
+$ git clone https://github.com/flyingsparx/NodeDirectUploader.git
 ```
 
 Change directory into the application and use `npm` to install the application's dependencies:
