@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "express": "4.x",
-    "ejs": "*",
-    "aws-sdk": "*"
+    "aws-sdk": "2.x",
+    "ejs": "2.*",
+    "express": "4.x"
   }
 }
