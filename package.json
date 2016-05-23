@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "aws-sdk": "2.x",
-    "ejs": "2.*",
+    "ejs": "2.x",
     "express": "4.x"
   }
 }
